@@ -1,6 +1,7 @@
 package homework2;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * A Node is a TODO
@@ -17,15 +18,22 @@ public class Node {
     private final String label; //FIXME to template
     private String data; //FIXME to template
     private final Color color;
-    private final List<String> children;
-    private final List<String> parents;
+    private final Map<String,Node> children;
+    private final Map<String,Node> parents;
+    private String childrenList;
+    private String parentsList;
 
 
     /**
      * @requires label is not null, data is not null, color is BLACK or WHITE
      * @effects Initializes this with the given label, data and color.
      */
-    public Node(String label, String data, Color color);
+    public Node(String label, String data, Color color) {
+        this.label = label;
+        this.data = data;
+        this.color = color;
+        checkRep();
+    }
 
 
     /**
@@ -33,7 +41,11 @@ public class Node {
      * @requires toCopy is not null
      * @effects Initializes this as a copy of toCopy
      */
-    public Node(Node toCopy);
+    public Node(Node toCopy) {
+        String copiedLabel = new String(toCopy.label);
+        String copiedData = new String(toCopy.data);
+        //How do we copy maps?
+    }
 
 
     /**
@@ -42,7 +54,9 @@ public class Node {
      * @effects Adds the node child to the children list if the child's color is different from this.color
      *          Otherwise throws ChildIsOfTheSameColor
      */
-    public void appendToChildren(String label, Node child);
+    public void appendToChildren(String label, Node child) {
+        checkRep();
+    }
 
 
     /**
@@ -83,7 +97,7 @@ public class Node {
      * @modifies Nothing
      * @effects Returns a list containing the children of this
      */
-    public List<String> getChildrenList();
+    public String getChildrenList();
 
 
     /**
@@ -91,7 +105,7 @@ public class Node {
      * @modifies Nothing
      * @effects Returns a list containing the parents of this
      */
-    public List<String> getParentsList();
+    public String getParentsList();
 
 
     /**
