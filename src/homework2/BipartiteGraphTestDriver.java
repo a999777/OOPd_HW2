@@ -10,8 +10,7 @@ import static homework2.IllegalArgumentException.*;
  */
 public class BipartiteGraphTestDriver {
 
-//    private Map<String, BipartiteGraph<String>> graphs;
-    private Map<String, BipartiteGraph> graphs;  //TODO change to the previous declaration
+    private Map<String, BipartiteGraph<String, String>> graphs;
 
     /**
      * @modifies this
@@ -31,7 +30,7 @@ public class BipartiteGraphTestDriver {
      */
     public void createGraph(String graphName) {
         // TODO: Implement this method
-        BipartiteGraph newGraph = new BipartiteGraph();
+        BipartiteGraph<String, String> newGraph = new BipartiteGraph();
         this.graphs.put(graphName, newGraph);
     }
 
@@ -152,7 +151,7 @@ public class BipartiteGraphTestDriver {
                                         ChildDoesntExistException{
     	//TODO: Implement this method
         BipartiteGraph currentGraph = this.graphs.get(graphName);
-        return currentGraph.getChildByEdgeLabel(parentName, edgeLabel);
+        return (String)currentGraph.getChildByEdgeLabel(parentName, edgeLabel);
     }
 
     
@@ -167,7 +166,7 @@ public class BipartiteGraphTestDriver {
                                           ParentDoesntExistException {
         //TODO: Implement this method
         BipartiteGraph currentGraph = this.graphs.get(graphName);
-        return currentGraph.getParentByEdgeLabel(childName, edgeLabel);
+        return (String)currentGraph.getParentByEdgeLabel(childName, edgeLabel);
     }
 
 }

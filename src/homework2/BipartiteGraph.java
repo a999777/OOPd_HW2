@@ -11,7 +11,7 @@ import static homework2.IllegalArgumentException.*;
  * that are of the same color).
  * Thus, a typical BipartiteGraph has the properties {whiteNodes, blackNodes}.
  */
-public class BipartiteGraph {
+public class BipartiteGraph<L, D> {
 
     //Abs. Function:
     //  Represents a bipartite graph whose all white nodes are stored in this.whiteNodes and all black nodes are stored
@@ -21,8 +21,8 @@ public class BipartiteGraph {
     //  this.whiteNodes and this.blackNodes cannot be null.
 
 
-    private final Map<String, Node> whiteNodes;
-    private final Map<String, Node> blackNodes;
+    private final Map<L, Node<L, D>> whiteNodes;
+    private final Map<L, Node<L, D>> blackNodes;
 
     /**
      * @requires name is not null
@@ -43,7 +43,7 @@ public class BipartiteGraph {
      *          is already in the graph, throws NodeWithThisLabelAlreadyExistException otherwise
      *
      */
-    public void addBlackNode(String nodeLabel, String data) throws NodeWithThisLabelAlreadyExistException {
+    public void addBlackNode(L nodeLabel, D data) throws NodeWithThisLabelAlreadyExistException {
     	// TODO: Implement this method
         checkRep();
         if(isNodeWithNameExists(nodeLabel)) {
@@ -62,7 +62,7 @@ public class BipartiteGraph {
      *          is already in the graph, throws NodeWithThisLabelAlreadyExistException otherwise
      *
      */
-    public void addWhiteNode(String nodeLabel, String data) throws NodeWithThisLabelAlreadyExistException {
+    public void addWhiteNode(L nodeLabel, D data) throws NodeWithThisLabelAlreadyExistException {
     	//TODO: Implement this method
         checkRep();
         if(isNodeWithNameExists(nodeLabel)) {
@@ -80,22 +80,12 @@ public class BipartiteGraph {
      * @effects Returns True if a node with nodeLabel already exists
      *          False otherwise
      */
-    private boolean isNodeWithNameExists(String nodeLabel) {
-        // TODO: Implement this method
+    private boolean isNodeWithNameExists(L nodeLabel) {
         checkRep();
         return (this.whiteNodes.containsKey(nodeLabel) || this.blackNodes.containsKey(nodeLabel));
     }
 
 
-    /* TODO: What we must verify when using this function:
-     *           && ((addBlackNode(parentName) && addWhiteNode(childName))
-     *              || (addWhiteNode(parentName) && addBlackNode(childName)))
-     *           && edgeLabel != null
-     *           && node named parentName has no other outgoing edge labeled
-     * 				edgeLabel
-     *           && node named childName has no other incoming edge labeled
-     * 				edgeLabel
-     */
     /**
      * @requires parentName, childName, edgeLabel is not null
      * @modifies this
@@ -105,7 +95,7 @@ public class BipartiteGraph {
      *          Else if parent and child is of the same color throw
      *          Else creates an edge from parentName Node to childName Node labeled edgeLabel
      */
-    public void addEdge(String parentName, String childName, String edgeLabel) throws IllegalArgumentException{
+    public void addEdge(L parentName, L childName, L edgeLabel) throws IllegalArgumentException{
     	//TODO: Implement this method
         checkRep();
         // These lines might throw an exception, we'll just pass it on
@@ -173,7 +163,7 @@ public class BipartiteGraph {
      *         Otherwise a space-separated list of the names of the children of
      * 		   parentName in the graph graphName, in alphabetical order.
      */
-    public String listChildren(String parentName) throws NodeWithThisLabelDoesntExistException {
+    public String listChildren(L parentName) throws NodeWithThisLabelDoesntExistException {
     	//TODO: Implement this method
         checkRep();
         Node parent = getNodeByNodeLabel(parentName);
@@ -188,7 +178,7 @@ public class BipartiteGraph {
      *         Otherwise a space-separated list of the names of the children of
      * 		   parentName in the graph graphName, in alphabetical order.
      */
-    public String listParents(String childName) throws NodeWithThisLabelDoesntExistException {
+    public String listParents(L childName) throws NodeWithThisLabelDoesntExistException {
     	//TODO: Implement this method
         checkRep();
         Node child = getNodeByNodeLabel(childName);
@@ -203,14 +193,14 @@ public class BipartiteGraph {
      *          Else if parentName doesn't have an outgoing edge with the label edgeLabel throws ChildDoesntExistException
      * 		    Otherwise the name of the child of parentName that is connected by the edge labeled edgeLabel in this.
      */
-    public String getChildByEdgeLabel(String parentName, String edgeLabel) throws NodeWithThisLabelDoesntExistException,
+    public L getChildByEdgeLabel(L parentName, L edgeLabel) throws NodeWithThisLabelDoesntExistException,
         ChildDoesntExistException {
     	//TODO: Implement this method
         checkRep();
         Node parent = getNodeByNodeLabel(parentName);
         Node child = parent.findChildByEdgeLabel(edgeLabel);
         checkRep();
-    	return child.getLabel();
+    	return (L)child.getLabel();
     }
 
 
@@ -220,14 +210,14 @@ public class BipartiteGraph {
      *          Else if childName doesn't have an ingoing edge with the label edgeLabel throws ParentDoesntExistException
      * 		    Otherwise the name of the parent of childName that is connected by the edge labeled edgeLabel in this.
      */
-    public String getParentByEdgeLabel(String childName, String edgeLabel) throws NodeWithThisLabelDoesntExistException,
+    public L getParentByEdgeLabel(L childName, L edgeLabel) throws NodeWithThisLabelDoesntExistException,
             ParentDoesntExistException {
         //TODO: Implement this method
         checkRep();
         Node child = getNodeByNodeLabel(childName);
         Node parent = child.findParentByEdgeLabel(edgeLabel);
         checkRep();
-        return parent.getLabel();
+        return (L)parent.getLabel();
     }
 
 
@@ -236,7 +226,7 @@ public class BipartiteGraph {
      * @effects If this doesn't contain a node named nodeLabel throws NodeWithThisLabelDoesntExistException
      *          Else returns the Node connected to nodeLabel label
      */
-    private Node getNodeByNodeLabel(String nodeLabel) throws NodeWithThisLabelDoesntExistException {
+    private Node getNodeByNodeLabel(L nodeLabel) throws NodeWithThisLabelDoesntExistException {
         if(!isNodeWithNameExists(nodeLabel)) {
             throw new NodeWithThisLabelDoesntExistException();
         }

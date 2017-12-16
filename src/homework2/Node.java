@@ -1,6 +1,5 @@
 package homework2;
 
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 
@@ -16,7 +15,7 @@ import static homework2.Node.Color.WHITE;
  * Thus, a typical Node has the properties {label, data, color, children, parents, childrenList, parentsList}
  * A Node is immutable
  */
-public class Node {
+public class Node<L, D> {
 
     //Abs. Function:
     //  Represents a bipartite graph node that is labeled this.label, contains this.data and is of color this.color.
@@ -33,11 +32,11 @@ public class Node {
 
     public enum Color{BLACK, WHITE};
 
-    private final String label; //FIXME to template
-    private String data; //FIXME to template
+    private final L label;
+    private D data;
     private final Color color;
-    private final Map<String,Node> children;
-    private final Map<String,Node> parents;
+    private final Map<L,Node> children;
+    private final Map<L,Node> parents;
     private String childrenList;
     private String parentsList;
 
@@ -46,7 +45,7 @@ public class Node {
      * @requires label is not null, data is not null, color is BLACK or WHITE
      * @effects Initializes this with the given label, data and color.
      */
-    public Node(String label, String data, Color color) {
+    public Node(L label, D data, Color color) {
         this.label = label;
         this.data = data;
         this.color = color;
@@ -67,11 +66,11 @@ public class Node {
 //        String copiedLabel = new String(toCopy.label);
 //        String copiedData = new String(toCopy.data);
         // Assuming both are immutable
-        this.label = toCopy.getLabel();
+        this.label = (L)toCopy.getLabel();
         if(toCopy.data == null) {
             this.data = null;
         } else {
-            this.data = toCopy.getData();
+            this.data = (D)toCopy.getData();
         }
         this.parents = new HashMap<>(toCopy.parents);
         this.children = new HashMap<>(toCopy.children);
@@ -79,8 +78,6 @@ public class Node {
         this.childrenList = toCopy.getParentsList();
         this.color = toCopy.getColor();
         checkRep();
-        //How do we copy maps?
-        //todo NOT FINISHED
     }
 
 
@@ -92,15 +89,16 @@ public class Node {
      *          Throws ChildAlreadyConnectedException if child is already in this.children
      *          Otherwise throws ChildIsOfTheSameColorException
      */
-    public void appendToChildren(String label, Node child) throws ChildAlreadyConnectedException,
+    public void appendToChildren(L label, Node child) throws ChildAlreadyConnectedException,
             ChildIsOfTheSameColorException  {
         checkRep();
-        //TODO what about checking labels?
-        //Check exceptions
+
+        //Check if color is okay
         if(this.color == child.color) {
             //TODO maybe we should check diffreently?
             throw new ChildIsOfTheSameColorException();
         }
+        //Verify we don't have this label yet
         if(this.children.containsKey(child.label)) {
             throw new ChildAlreadyConnectedException();
         }
@@ -131,19 +129,19 @@ public class Node {
      *          Throws ParentAlreadyConnectedException if parent is already in this.parent
      *          Otherwise throws ParentIsOfTheSameColorException
      */
-    public void appendToParents(String label, Node parent) throws LabelAlreadyInUseException,
+    public void appendToParents(L label, Node parent) throws LabelAlreadyInUseException,
             ParentIsOfTheSameColorException {
         checkRep();
-        //TODO what about checking labels?
-        //Check exceptions
+
+        //Check if color is okay
         if(this.color == parent.color) {
             //TODO maybe we should check differentely?
             throw new ParentIsOfTheSameColorException();
         }
+        //Verify we don't have this label yet
         if(this.parents.containsKey(label) || this.children.containsKey(label)) {
             throw new LabelAlreadyInUseException();
         }
-
 
         //Add to parents and to the parents list that we need to maintain
         //TODO can we assume toString of 'label'?
@@ -179,7 +177,7 @@ public class Node {
      * @modifies Nothing
      * @effects Returns the label of this
      */
-    public String getLabel() {
+    public L getLabel() {
         checkRep();
         //We are not worried about returning this.label since it is immutable (as said in the pdf).
         return this.label;
@@ -191,11 +189,12 @@ public class Node {
      * @modifies Nothing
      * @effects Returns the data of this
      */
-    public String getData() {
+    public D getData() {
         checkRep();
         //Copying data and returning the copy since we don't know if data is immutable or not
-        String retData = new String(this.data);
-        return retData;
+        //D retData = new D(this.data);
+        //TODO this causes a problem, so we switched to returning the field itself. we have to make sure it is immutable
+        return this.data;
     }
 
 
@@ -229,7 +228,7 @@ public class Node {
      * @effects Returns a child that is connected to this with an edge labeled label if there is such a child node
      *          Throws ChildDoesntExistException otherwise.
      */
-    public Node findChildByEdgeLabel(String label) throws ChildDoesntExistException {
+    public Node findChildByEdgeLabel(L label) throws ChildDoesntExistException {
         checkRep();
         //Checking if we have a child with this label and throwing exception if we don't
         if(!this.children.containsKey(label)) {
@@ -248,7 +247,7 @@ public class Node {
      * @effects Returns a parent that is connected to this with an edge labeled label if there is such a parent node
      *          Throws ParentDoesntExistException otherwise.
      */
-    public Node findParentByEdgeLabel(String label) throws ParentDoesntExistException {
+    public Node findParentByEdgeLabel(L label) throws ParentDoesntExistException {
         checkRep();
         //Checking if we have a parent with this label and throwing exception if we don't
         if(!this.parents.containsKey(label)) {
@@ -259,28 +258,6 @@ public class Node {
         checkRep();
         return retParent;
     }
-
-
-//    /**
-//     * @requires edgeLabel is not null
-//     * @modifies Nothing
-//     * @effects Returns true if there exists an edge with label edgeLabel that is an incoming edge of this, else false
-//     */
-//    public boolean isIncomingEdge(String edgeLabel) {
-//        checkRep();
-//        return this.parents.containsKey(edgeLabel);
-//    }
-//
-//
-//    /**
-//     * @requires edgeLabel is not null
-//     * @modifies Nothing
-//     * @effects Returns true if there exists an edge with label edgeLabel that is an outgoing edge of this, else false
-//     */
-//    public boolean isOutgoingEdge(String edgeLabel) {
-//        checkRep();
-//        return this.children.containsKey(edgeLabel);
-//    }
 
 
     /**
@@ -295,7 +272,6 @@ public class Node {
         assert(this.childrenList != null):"childrenList cannot be null!";
         assert(this.parentsList != null):"parentsList cannot be null!";
         assert(this.color == BLACK || this.color == WHITE ):"A Node color has to be black or white!";
-
     }
 
 
