@@ -1,7 +1,9 @@
 package homework2;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.awt.*;
+import java.util.*;
+import java.util.List;
+
 import static homework2.IllegalArgumentException.*;
 import static homework2.Node.Color.BLACK;
 import static homework2.Node.Color.WHITE;
@@ -23,7 +25,7 @@ public class Node {
     //  this.parentsList.
 
     //Rep. Invariant:
-    //  this.label and this.data cannot be null.
+    //  this.label cannot be null.
     //  this.color has to be either Black or White.
     //  this.children and this.parents cannot be null.
     //  this.childrenList and this.parentsList cannot be null.
@@ -62,8 +64,21 @@ public class Node {
      * @effects Initializes this as a copy of toCopy
      */
     public Node(Node toCopy) {
-        String copiedLabel = new String(toCopy.label);
-        String copiedData = new String(toCopy.data);
+//        String copiedLabel = new String(toCopy.label);
+//        String copiedData = new String(toCopy.data);
+        // Assuming both are immutable
+        this.label = toCopy.getLabel();
+        if(toCopy.data == null) {
+            this.data = null;
+        } else {
+            this.data = toCopy.getData();
+        }
+        this.parents = new HashMap<>(toCopy.parents);
+        this.children = new HashMap<>(toCopy.children);
+        this.parentsList = toCopy.getChildrenList();
+        this.childrenList = toCopy.getParentsList();
+        this.color = toCopy.getColor();
+        checkRep();
         //How do we copy maps?
         //todo NOT FINISHED
     }
@@ -86,14 +101,24 @@ public class Node {
             //TODO maybe we should check diffreently?
             throw new ChildIsOfTheSameColorException();
         }
-        if(!this.children.containsKey(child.label)) {
+        if(this.children.containsKey(child.label)) {
             throw new ChildAlreadyConnectedException();
         }
 
         //Add to children and to the children list that we need to maintain
         //TODO can we assume toString of 'label'?
-        this.children.put(child.label, child);
-        this.childrenList += this.childrenList + " " + child.label.toString();
+        this.children.put(label, child);
+        List<String> tempChildrenList = new ArrayList<>();
+        for(Node currNode : this.children.values()) {
+            tempChildrenList.add(currNode.getLabel().toString());
+        }
+        Collections.sort(tempChildrenList);
+        this.childrenList = "";
+        for(String childLabel: tempChildrenList) {
+            this.childrenList +=  childLabel;
+            this.childrenList +=  " ";
+        }
+        this.childrenList = this.childrenList.trim();
         checkRep();
     }
 
@@ -106,23 +131,33 @@ public class Node {
      *          Throws ParentAlreadyConnectedException if parent is already in this.parent
      *          Otherwise throws ParentIsOfTheSameColorException
      */
-    public void appendToParents(String label, Node parent) throws ParentAlreadyConnectedException,
+    public void appendToParents(String label, Node parent) throws LabelAlreadyInUseException,
             ParentIsOfTheSameColorException {
         checkRep();
         //TODO what about checking labels?
         //Check exceptions
         if(this.color == parent.color) {
-            //TODO maybe we should check diffreently?
+            //TODO maybe we should check differentely?
             throw new ParentIsOfTheSameColorException();
         }
-        if(!this.parents.containsKey(parent.label)) {
-            throw new ParentAlreadyConnectedException();
+        if(this.parents.containsKey(label) || this.children.containsKey(label)) {
+            throw new LabelAlreadyInUseException();
         }
+
 
         //Add to parents and to the parents list that we need to maintain
         //TODO can we assume toString of 'label'?
-        this.parents.put(parent.label, parent);
-        this.parentsList += this.parentsList + " " + parent.label.toString();
+        this.parents.put(label, parent);
+        List<String> tempParentsList = new ArrayList<>();
+        for(Node currNode: this.parents.values()) {
+            tempParentsList.add(currNode.getLabel().toString());
+        }
+        Collections.sort(tempParentsList);
+        for(String parentLabel: tempParentsList) {
+            this.parentsList +=  parentLabel;
+            this.parentsList +=  " ";
+        }
+        this.parentsList = this.parentsList.trim();
         checkRep();
     }
 
@@ -226,18 +261,40 @@ public class Node {
     }
 
 
+//    /**
+//     * @requires edgeLabel is not null
+//     * @modifies Nothing
+//     * @effects Returns true if there exists an edge with label edgeLabel that is an incoming edge of this, else false
+//     */
+//    public boolean isIncomingEdge(String edgeLabel) {
+//        checkRep();
+//        return this.parents.containsKey(edgeLabel);
+//    }
+//
+//
+//    /**
+//     * @requires edgeLabel is not null
+//     * @modifies Nothing
+//     * @effects Returns true if there exists an edge with label edgeLabel that is an outgoing edge of this, else false
+//     */
+//    public boolean isOutgoingEdge(String edgeLabel) {
+//        checkRep();
+//        return this.children.containsKey(edgeLabel);
+//    }
+
+
     /**
      * Check to see if the representation invariant is being violated
      * @throw AssertionError if representation invariant is violated
      */
     private void checkRep() {
         assert(this.label != null):"A label cannot be null!";
-        assert(this.data != null):"Data cannot be null!";
+        //assert(this.data != null):"Data cannot be null!"; fixme we do want to allow data to be null
         assert(this.children != null):"Children Map cannot be null!";
         assert(this.parents != null):"Parents Map cannot be null!";
         assert(this.childrenList != null):"childrenList cannot be null!";
         assert(this.parentsList != null):"parentsList cannot be null!";
-        assert(this.color != BLACK && this.color != WHITE ):"A Node color has to be black or white!";
+        assert(this.color == BLACK || this.color == WHITE ):"A Node color has to be black or white!";
 
     }
 

@@ -1,4 +1,4 @@
-package homework2;
+package homework2.Excluded;
 
 /**
  * This class implements a transaction in a graph of payment channels.

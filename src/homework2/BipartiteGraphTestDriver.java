@@ -1,6 +1,8 @@
 package homework2;
 
 import java.util.*;
+import static homework2.IllegalArgumentException.*;
+
 
 /**
  * This class implements a testing driver for BipartiteGraph. The driver
@@ -8,7 +10,8 @@ import java.util.*;
  */
 public class BipartiteGraphTestDriver {
 
-    private Map<String, BipartiteGraph<String>> graphs;
+//    private Map<String, BipartiteGraph<String>> graphs;
+    private Map<String, BipartiteGraph> graphs;  //TODO change to the previous declaration
 
     /**
      * @modifies this
@@ -16,8 +19,7 @@ public class BipartiteGraphTestDriver {
      */
     public BipartiteGraphTestDriver () {
     	// TODO: Implement this constructor
-       
-       
+        this.graphs = new HashMap<>();
     }
 
     
@@ -29,8 +31,8 @@ public class BipartiteGraphTestDriver {
      */
     public void createGraph(String graphName) {
         // TODO: Implement this method
-        
-    	
+        BipartiteGraph newGraph = new BipartiteGraph();
+        this.graphs.put(graphName, newGraph);
     }
 
     
@@ -44,10 +46,10 @@ public class BipartiteGraphTestDriver {
      * @effects Adds a black node represented by the String nodeName to the
      * 			graph named graphName.
      */
-    public void addBlackNode(String graphName, String nodeName) {
+    public void addBlackNode(String graphName, String nodeName) throws NodeWithThisLabelAlreadyExistException {
     	// TODO: Implement this method
-    	
-    	
+    	BipartiteGraph currentGraph = this.graphs.get(graphName);
+    	currentGraph.addBlackNode(nodeName, null);
     }
 
     
@@ -61,10 +63,10 @@ public class BipartiteGraphTestDriver {
      * @effects Adds a white node represented by the String nodeName to the
      * 			graph named graphName.
      */
-    public void addWhiteNode(String graphName, String nodeName) {
+    public void addWhiteNode(String graphName, String nodeName) throws NodeWithThisLabelAlreadyExistException {
     	//TODO: Implement this method
-    	
-    	
+        BipartiteGraph currentGraph = this.graphs.get(graphName);
+        currentGraph.addWhiteNode(nodeName, null);
     }
 
     
@@ -84,10 +86,10 @@ public class BipartiteGraphTestDriver {
      */
     public void addEdge(String graphName,
     					String parentName, String childName, 
-                        String edgeLabel) {
+                        String edgeLabel) throws IllegalArgumentException{
     	//TODO: Implement this method
-    	
-    	
+        BipartiteGraph currentGraph = this.graphs.get(graphName);
+        currentGraph.addEdge(parentName, childName, edgeLabel);
     }
 
     
@@ -98,8 +100,8 @@ public class BipartiteGraphTestDriver {
      */
     public String listBlackNodes(String graphName) {
     	//TODO: Implement this method
-    	
-    	
+        BipartiteGraph currentGraph = this.graphs.get(graphName);
+        return currentGraph.listBlackNodes();
     }
 
     
@@ -110,8 +112,8 @@ public class BipartiteGraphTestDriver {
      */
     public String listWhiteNodes(String graphName) {
     	//TODO: Implement this method
-    	
-    	
+        BipartiteGraph currentGraph = this.graphs.get(graphName);
+        return currentGraph.listWhiteNodes();
     }
 
     
@@ -120,10 +122,10 @@ public class BipartiteGraphTestDriver {
      * @return a space-separated list of the names of the children of
      * 		   parentName in the graph graphName, in alphabetical order.
      */
-    public String listChildren(String graphName, String parentName) {
+    public String listChildren(String graphName, String parentName) throws NodeWithThisLabelDoesntExistException {
     	//TODO: Implement this method
-    	
-    	
+        BipartiteGraph currentGraph = this.graphs.get(graphName);
+        return currentGraph.listChildren(parentName);
     }
 
     
@@ -132,10 +134,10 @@ public class BipartiteGraphTestDriver {
      * @return a space-separated list of the names of the parents of
      * 		   childName in the graph graphName, in alphabetical order.
      */
-    public String listParents(String graphName, String childName) {
+    public String listParents(String graphName, String childName) throws NodeWithThisLabelDoesntExistException {
     	//TODO: Implement this method
-    	
-    	
+        BipartiteGraph currentGraph = this.graphs.get(graphName);
+        return currentGraph.listParents(childName);
     }
 
     
@@ -146,10 +148,11 @@ public class BipartiteGraphTestDriver {
      * 		   edge labeled edgeLabel, in the graph graphName.
      */
     public String getChildByEdgeLabel(String graphName, String parentName,
-    								   String edgeLabel) {
+    								   String edgeLabel) throws NodeWithThisLabelDoesntExistException,
+                                        ChildDoesntExistException{
     	//TODO: Implement this method
-    	
-    	
+        BipartiteGraph currentGraph = this.graphs.get(graphName);
+        return currentGraph.getChildByEdgeLabel(parentName, edgeLabel);
     }
 
     
@@ -160,9 +163,11 @@ public class BipartiteGraphTestDriver {
      * 		   edge labeled edgeLabel, in the graph graphName.
      */
     public String getParentByEdgeLabel(String graphName, String childName,
-    									String edgeLabel) {
-    	//TODO: Implement this method
-    	
-    	
+    									String edgeLabel) throws NodeWithThisLabelDoesntExistException,
+                                          ParentDoesntExistException {
+        //TODO: Implement this method
+        BipartiteGraph currentGraph = this.graphs.get(graphName);
+        return currentGraph.getParentByEdgeLabel(childName, edgeLabel);
     }
+
 }

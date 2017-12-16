@@ -1,4 +1,6 @@
-package homework2;
+package homework2.Excluded;
+
+import homework2.BipartiteGraph;
 
 /**
  * The Simulatable interface is implemented by each of the pipes and filters in
