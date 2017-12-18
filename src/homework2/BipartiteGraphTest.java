@@ -129,7 +129,7 @@ public class BipartiteGraphTest {
         assertEquals("w3 children incorrect","",driver.listChildren("g","w3"));
     }
 
-    @Test(expected = ParentIsOfTheSameColorException.class)
+    @Test(expected = SameColorException.class)
     public void addEdgeBetweenSameColorTest() throws IllegalArgumentException {
         BipartiteGraphTestDriver driver = new BipartiteGraphTestDriver();
         driver.createGraph("g");
@@ -158,7 +158,7 @@ public class BipartiteGraphTest {
         driver.addEdge("g","b1","w3", "a");
     }
 
-    @Test(expected = LabelAlreadyInUseException.class)
+    @Test(expected = EdgeLabelAlreadyExists.class)
     public void addEdgeWithLabelThatAlreadyExistTest() throws IllegalArgumentException {
         BipartiteGraphTestDriver driver = new BipartiteGraphTestDriver();
         driver.createGraph("g");
@@ -202,10 +202,6 @@ public class BipartiteGraphTest {
 
     }
 
-
-
-    
-    
     //  TODO: Add black-box tests
     
   

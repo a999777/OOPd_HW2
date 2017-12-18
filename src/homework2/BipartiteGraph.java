@@ -24,12 +24,12 @@ public class BipartiteGraph<L, D> {
     private final Map<L, Node<L, D>> whiteNodes;
     private final Map<L, Node<L, D>> blackNodes;
 
+
     /**
      * @requires name is not null
      * @effects Constructs a BipartiteGraph named name.
      */
     public BipartiteGraph() {
-    	// TODO: Implement this constructor
         this.whiteNodes = new HashMap<>();
         this.blackNodes = new HashMap<>();
         checkRep();
@@ -44,7 +44,6 @@ public class BipartiteGraph<L, D> {
      *
      */
     public void addBlackNode(L nodeLabel, D data) throws NodeWithThisLabelAlreadyExistException {
-    	// TODO: Implement this method
         checkRep();
         if(isNodeWithNameExists(nodeLabel)) {
             throw new NodeWithThisLabelAlreadyExistException();
@@ -63,7 +62,6 @@ public class BipartiteGraph<L, D> {
      *
      */
     public void addWhiteNode(L nodeLabel, D data) throws NodeWithThisLabelAlreadyExistException {
-    	//TODO: Implement this method
         checkRep();
         if(isNodeWithNameExists(nodeLabel)) {
             throw new NodeWithThisLabelAlreadyExistException();
@@ -76,7 +74,6 @@ public class BipartiteGraph<L, D> {
 
     /**
      * @requires nodeLabel is not null
-     * @modifies Nothing
      * @effects Returns True if a node with nodeLabel already exists
      *          False otherwise
      */
@@ -91,18 +88,17 @@ public class BipartiteGraph<L, D> {
      * @modifies this
      * @effects If parentName or childName doesn't exist as nodes in this throws NodeWithThisLabelDoesntExistException
      *          Else if parentName has an outgoing edge with the label edgeLabel or childName has an incoming edge with
-     *              the label edgeLabel throws EdgeWithThisLabelAlreadyExistException
-     *          Else if parent and child is of the same color throw
+     *              the label edgeLabel throws EdgeLabelAlreadyExists
+     *          Else if parent and child is of the same color throws SameColorException
      *          Else creates an edge from parentName Node to childName Node labeled edgeLabel
      */
     public void addEdge(L parentName, L childName, L edgeLabel) throws IllegalArgumentException{
-    	//TODO: Implement this method
         checkRep();
-        // These lines might throw an exception, we'll just pass it on
+
+        //Getting the nodes that we want to connect. These lines might throw an exception, we'll just pass it on
         Node child = getNodeByNodeLabel(childName);
         Node parent = getNodeByNodeLabel(parentName);
-
-        // These line also might throw an exception that we'll pass on
+        //Connecting the edge. These lines also might throw an exception that we'll pass on
         child.appendToParents(edgeLabel, parent);
         parent.appendToChildren(edgeLabel, child);
         checkRep();
@@ -110,19 +106,19 @@ public class BipartiteGraph<L, D> {
 
     
     /**
-     * @requires nothing
      * @return a space-separated list of the names of all the black nodes
      * 		   in the graph graphName, in alphabetical order.
      */
     public String listBlackNodes() {
-    	//TODO: Implement this method
         checkRep();
+        //Creating an array list with the labels of all the black nodes, and sorting it
         List<String> blackNodesList = new ArrayList<String>();
         Iterator keysIterator = this.blackNodes.keySet().iterator();
         while (keysIterator.hasNext()) {
             blackNodesList.add(keysIterator.next().toString());
         }
         Collections.sort(blackNodesList);
+        //Creating a string from the sorted list
         String blackNodesString = "";
         for(String currNode: blackNodesList) {
             blackNodesString += currNode;
@@ -139,14 +135,15 @@ public class BipartiteGraph<L, D> {
      * 		   in the graph graphName, in alphabetical order.
      */
     public String listWhiteNodes() {
-    	//TODO: Implement this method
         checkRep();
+        //Creating an array list with the labels of all the black nodes, and sorting it
         List<String> whiteNodesList = new ArrayList<String>();
         Iterator keysIterator = this.whiteNodes.keySet().iterator();
         while (keysIterator.hasNext()) {
             whiteNodesList.add(keysIterator.next().toString());
         }
         Collections.sort(whiteNodesList);
+        //Creating a string from the sorted list
         String whiteNodesString = "";
         for(String currNode: whiteNodesList) {
             whiteNodesString += currNode;
@@ -160,42 +157,37 @@ public class BipartiteGraph<L, D> {
     /**
      * @requires parentName is not null
      * @effects If this doesn't contain a node named parentName throws NodeWithThisLabelDoesntExistException
-     *         Otherwise a space-separated list of the names of the children of
+     *         Otherwise returns a space-separated list of the names of the children of
      * 		   parentName in the graph graphName, in alphabetical order.
      */
     public String listChildren(L parentName) throws NodeWithThisLabelDoesntExistException {
-    	//TODO: Implement this method
         checkRep();
         Node parent = getNodeByNodeLabel(parentName);
         return parent.getChildrenList();
-        //We need to sort alphabetically it somehow fixme
     }
 
     
     /**
      * @requires childName is not null
      * @effects If this doesn't contain a node named parentName throws NodeWithThisLabelDoesntExistException
-     *         Otherwise a space-separated list of the names of the children of
+     *         Otherwise returns a space-separated list of the names of the children of
      * 		   parentName in the graph graphName, in alphabetical order.
      */
     public String listParents(L childName) throws NodeWithThisLabelDoesntExistException {
-    	//TODO: Implement this method
         checkRep();
         Node child = getNodeByNodeLabel(childName);
         return child.getParentsList();
-        //We need to sort alphabetically it somehow fixme
     }
 
     
     /**
      * @requires parentName and edgeLabel is not null
      * @effects If this doesn't contain a node named parentName throws NodeWithThisLabelDoesntExistException
-     *          Else if parentName doesn't have an outgoing edge with the label edgeLabel throws ChildDoesntExistException
+     *          Else if parentName doesn't have an outgoing edge with the label edgeLabel throws EdgeWithLabelDoesntExistException
      * 		    Otherwise the name of the child of parentName that is connected by the edge labeled edgeLabel in this.
      */
     public L getChildByEdgeLabel(L parentName, L edgeLabel) throws NodeWithThisLabelDoesntExistException,
-        ChildDoesntExistException {
-    	//TODO: Implement this method
+        EdgeWithLabelDoesntExistException {
         checkRep();
         Node parent = getNodeByNodeLabel(parentName);
         Node child = parent.findChildByEdgeLabel(edgeLabel);
@@ -207,12 +199,11 @@ public class BipartiteGraph<L, D> {
     /**
      * @requires childName and edgeLabel is not null
      * @effects If this doesn't contain a node named childName throws NodeWithThisLabelDoesntExistException
-     *          Else if childName doesn't have an ingoing edge with the label edgeLabel throws ParentDoesntExistException
+     *          Else if childName doesn't have an ingoing edge with the label edgeLabel throws EdgeWithLabelDoesntExistException
      * 		    Otherwise the name of the parent of childName that is connected by the edge labeled edgeLabel in this.
      */
     public L getParentByEdgeLabel(L childName, L edgeLabel) throws NodeWithThisLabelDoesntExistException,
-            ParentDoesntExistException {
-        //TODO: Implement this method
+            EdgeWithLabelDoesntExistException {
         checkRep();
         Node child = getNodeByNodeLabel(childName);
         Node parent = child.findParentByEdgeLabel(edgeLabel);

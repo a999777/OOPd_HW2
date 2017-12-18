@@ -47,12 +47,13 @@ public class Node<L, D> {
      */
     public Node(L label, D data, Color color) {
         this.label = label;
+        //TODO should we create a new D?
         this.data = data;
         this.color = color;
         this.children = new HashMap<>();
         this.parents = new HashMap<>();
-        this.childrenList = new String();
-        this.parentsList = new String();
+        this.childrenList = "";
+        this.parentsList = "";
         checkRep();
     }
 
@@ -63,9 +64,6 @@ public class Node<L, D> {
      * @effects Initializes this as a copy of toCopy
      */
     public Node(Node toCopy) {
-//        String copiedLabel = new String(toCopy.label);
-//        String copiedData = new String(toCopy.data);
-        // Assuming both are immutable
         this.label = (L)toCopy.getLabel();
         if(toCopy.data == null) {
             this.data = null;
@@ -86,31 +84,31 @@ public class Node<L, D> {
      * @modifies this
      * @effects Adds the node child to the children and children list if the child's color is different from this.color
      *              and child is not already a child of this.
-     *          Throws ChildAlreadyConnectedException if child is already in this.children
-     *          Otherwise throws ChildIsOfTheSameColorException
+     *          Throws EdgeLabelAlreadyExists if child is already in this.children
+     *          Otherwise throws SameColorException
      */
-    public void appendToChildren(L label, Node child) throws ChildAlreadyConnectedException,
-            ChildIsOfTheSameColorException  {
+    public void appendToChildren(L label, Node child) throws EdgeLabelAlreadyExists, SameColorException  {
         checkRep();
 
         //Check if color is okay
         if(this.color == child.color) {
-            //TODO maybe we should check diffreently?
-            throw new ChildIsOfTheSameColorException();
+            throw new SameColorException();
         }
         //Verify we don't have this label yet
         if(this.children.containsKey(child.label)) {
-            throw new ChildAlreadyConnectedException();
+            throw new EdgeLabelAlreadyExists();
         }
 
-        //Add to children and to the children list that we need to maintain
+        //Add to children map
         //TODO can we assume toString of 'label'?
         this.children.put(label, child);
+        //Use a helper list to get all the names of children and then sort them
         List<String> tempChildrenList = new ArrayList<>();
         for(Node currNode : this.children.values()) {
             tempChildrenList.add(currNode.getLabel().toString());
         }
         Collections.sort(tempChildrenList);
+        //Create the updated string representing all children
         this.childrenList = "";
         for(String childLabel: tempChildrenList) {
             this.childrenList +=  childLabel;
@@ -126,31 +124,32 @@ public class Node<L, D> {
      * @modifies this
      * @effects Adds the node parent to the parents and parents list if the parent's color is different from this.color
      *              and parent is not already a parent of this.
-     *          Throws ParentAlreadyConnectedException if parent is already in this.parent
-     *          Otherwise throws ParentIsOfTheSameColorException
+     *          Throws EdgeLabelAlreadyExists if parent is already in this.parent
+     *          Otherwise throws SameColorException
      */
-    public void appendToParents(L label, Node parent) throws LabelAlreadyInUseException,
-            ParentIsOfTheSameColorException {
+    public void appendToParents(L label, Node parent) throws EdgeLabelAlreadyExists, SameColorException {
         checkRep();
 
         //Check if color is okay
         if(this.color == parent.color) {
-            //TODO maybe we should check differentely?
-            throw new ParentIsOfTheSameColorException();
+            throw new SameColorException();
         }
         //Verify we don't have this label yet
         if(this.parents.containsKey(label) || this.children.containsKey(label)) {
-            throw new LabelAlreadyInUseException();
+            throw new EdgeLabelAlreadyExists();
         }
 
-        //Add to parents and to the parents list that we need to maintain
+        //Add to parents map
         //TODO can we assume toString of 'label'?
         this.parents.put(label, parent);
+        //Use a helper list to get all the names of parents and then sort them
         List<String> tempParentsList = new ArrayList<>();
         for(Node currNode: this.parents.values()) {
             tempParentsList.add(currNode.getLabel().toString());
         }
         Collections.sort(tempParentsList);
+        //Create the updated string representing all children
+        this.parentsList = "";
         for(String parentLabel: tempParentsList) {
             this.parentsList +=  parentLabel;
             this.parentsList +=  " ";
@@ -161,8 +160,6 @@ public class Node<L, D> {
 
 
     /**
-     * @requires None
-     * @modifies Nothing
      * @effects Returns the color of this
      */
     public Color getColor() {
@@ -173,8 +170,6 @@ public class Node<L, D> {
 
 
     /**
-     * @requires None
-     * @modifies Nothing
      * @effects Returns the label of this
      */
     public L getLabel() {
@@ -185,8 +180,6 @@ public class Node<L, D> {
 
 
     /**
-     * @requires None
-     * @modifies Nothing
      * @effects Returns the data of this
      */
     public D getData() {
@@ -199,8 +192,6 @@ public class Node<L, D> {
 
 
     /**
-     * @requires None
-     * @modifies Nothing
      * @effects Returns a (string) list containing the children of this
      */
     public String getChildrenList() {
@@ -211,8 +202,6 @@ public class Node<L, D> {
 
 
     /**
-     * @requires None
-     * @modifies Nothing
      * @effects Returns a (string )list containing the parents of this
      */
     public String getParentsList() {
@@ -224,15 +213,14 @@ public class Node<L, D> {
 
     /**
      * @requires label is not null
-     * @modifies Nothing
      * @effects Returns a child that is connected to this with an edge labeled label if there is such a child node
-     *          Throws ChildDoesntExistException otherwise.
+     *          Throws EdgeWithLabelDoesntExistException otherwise.
      */
-    public Node findChildByEdgeLabel(L label) throws ChildDoesntExistException {
+    public Node findChildByEdgeLabel(L label) throws EdgeWithLabelDoesntExistException {
         checkRep();
-        //Checking if we have a child with this label and throwing exception if we don't
+        //Checking if we have a child connected with label and throwing exception if we don't
         if(!this.children.containsKey(label)) {
-            throw new ChildDoesntExistException();
+            throw new EdgeWithLabelDoesntExistException();
         }
         //Copying the Node just to be on the safe side fixme maybe not needed?
         Node retChild = new Node(this.children.get(label));
@@ -245,13 +233,13 @@ public class Node<L, D> {
      * @requires label is not null
      * @modifies Nothing
      * @effects Returns a parent that is connected to this with an edge labeled label if there is such a parent node
-     *          Throws ParentDoesntExistException otherwise.
+     *          Throws EdgeWithLabelDoesntExistException otherwise.
      */
-    public Node findParentByEdgeLabel(L label) throws ParentDoesntExistException {
+    public Node findParentByEdgeLabel(L label) throws EdgeWithLabelDoesntExistException {
         checkRep();
         //Checking if we have a parent with this label and throwing exception if we don't
         if(!this.parents.containsKey(label)) {
-            throw new ParentDoesntExistException();
+            throw new EdgeWithLabelDoesntExistException();
         }
         //Copying the Node just to be on the safe side fixme maybe not needed?
         Node retParent = new Node(this.parents.get(label));
@@ -266,7 +254,7 @@ public class Node<L, D> {
      */
     private void checkRep() {
         assert(this.label != null):"A label cannot be null!";
-        //assert(this.data != null):"Data cannot be null!"; fixme we do want to allow data to be null
+        //Note that this.data is not checked since we want to allow it to be null
         assert(this.children != null):"Children Map cannot be null!";
         assert(this.parents != null):"Parents Map cannot be null!";
         assert(this.childrenList != null):"childrenList cannot be null!";
