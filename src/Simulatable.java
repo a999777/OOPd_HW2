@@ -1,5 +1,3 @@
-package homework2.Excluded;
-
 import homework2.BipartiteGraph;
 
 /**

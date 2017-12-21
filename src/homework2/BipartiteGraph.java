@@ -15,7 +15,7 @@ public class BipartiteGraph<L, D> {
 
     //Abs. Function:
     //  Represents a bipartite graph whose all white nodes are stored in this.whiteNodes and all black nodes are stored
-    //  in this.blackNodes. The name of this bipartite graph is this.name.
+    //  in this.blackNodes.
 
     //Rep. Invariant:
     //  this.whiteNodes and this.blackNodes cannot be null.
@@ -106,61 +106,35 @@ public class BipartiteGraph<L, D> {
 
     
     /**
-     * @return a space-separated list of the names of all the black nodes
-     * 		   in the graph graphName, in alphabetical order.
+     * @return a list of the names of all the black nodes in this
      */
-    public String listBlackNodes() {
+    public List<L> listBlackNodes() {
         checkRep();
         //Creating an array list with the labels of all the black nodes, and sorting it
-        List<String> blackNodesList = new ArrayList<String>();
-        Iterator keysIterator = this.blackNodes.keySet().iterator();
-        while (keysIterator.hasNext()) {
-            blackNodesList.add(keysIterator.next().toString());
-        }
-        Collections.sort(blackNodesList);
-        //Creating a string from the sorted list
-        String blackNodesString = "";
-        for(String currNode: blackNodesList) {
-            blackNodesString += currNode;
-            blackNodesString += " ";
-        }
-        checkRep();
-        return blackNodesString.trim();
+        List<L> blackNodesList = new ArrayList<>(this.blackNodes.keySet());
+        //Collections.addAll(blackNodesList,(L)this.blackNodes.keySet());
+        return Collections.unmodifiableList(blackNodesList);
     }
 
     
     /**
-     * @requires nothing
-     * @return a space-separated list of the names of all the white nodes
-     * 		   in the graph graphName, in alphabetical order.
+     * @return a list of the names of all the white nodes in this
      */
-    public String listWhiteNodes() {
+    public List<L> listWhiteNodes() {
         checkRep();
         //Creating an array list with the labels of all the black nodes, and sorting it
-        List<String> whiteNodesList = new ArrayList<String>();
-        Iterator keysIterator = this.whiteNodes.keySet().iterator();
-        while (keysIterator.hasNext()) {
-            whiteNodesList.add(keysIterator.next().toString());
-        }
-        Collections.sort(whiteNodesList);
-        //Creating a string from the sorted list
-        String whiteNodesString = "";
-        for(String currNode: whiteNodesList) {
-            whiteNodesString += currNode;
-            whiteNodesString += " ";
-        }
-        checkRep();
-        return whiteNodesString.trim();
+        List<L> whiteNodesList = new ArrayList<>(this.whiteNodes.keySet());
+        //Collections.addAll(whiteNodesList,(L)this.whiteNodes.keySet());
+        return Collections.unmodifiableList(whiteNodesList);
     }
 
     
     /**
      * @requires parentName is not null
      * @effects If this doesn't contain a node named parentName throws NodeWithThisLabelDoesntExistException
-     *         Otherwise returns a space-separated list of the names of the children of
-     * 		   parentName in the graph graphName, in alphabetical order.
+     *         Otherwise returns a list of the labels of the children of parentName in this.
      */
-    public String listChildren(L parentName) throws NodeWithThisLabelDoesntExistException {
+    public List<L> listChildren(L parentName) throws NodeWithThisLabelDoesntExistException {
         checkRep();
         Node parent = getNodeByNodeLabel(parentName);
         return parent.getChildrenList();
@@ -170,10 +144,9 @@ public class BipartiteGraph<L, D> {
     /**
      * @requires childName is not null
      * @effects If this doesn't contain a node named parentName throws NodeWithThisLabelDoesntExistException
-     *         Otherwise returns a space-separated list of the names of the children of
-     * 		   parentName in the graph graphName, in alphabetical order.
+     *          Otherwise returns a list of the labels of the parents of childName in this.
      */
-    public String listParents(L childName) throws NodeWithThisLabelDoesntExistException {
+    public List<L> listParents(L childName) throws NodeWithThisLabelDoesntExistException {
         checkRep();
         Node child = getNodeByNodeLabel(childName);
         return child.getParentsList();

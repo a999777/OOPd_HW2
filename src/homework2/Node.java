@@ -1,7 +1,6 @@
 package homework2;
 
 import java.util.*;
-import java.util.List;
 
 import static homework2.IllegalArgumentException.*;
 import static homework2.Node.Color.BLACK;
@@ -37,8 +36,8 @@ public class Node<L, D> {
     private final Color color;
     private final Map<L,Node> children;
     private final Map<L,Node> parents;
-    private String childrenList;
-    private String parentsList;
+    private List<L>  childrenList;
+    private List<L>  parentsList;
 
 
     /**
@@ -52,8 +51,8 @@ public class Node<L, D> {
         this.color = color;
         this.children = new HashMap<>();
         this.parents = new HashMap<>();
-        this.childrenList = "";
-        this.parentsList = "";
+        this.childrenList = new ArrayList<>();
+        this.parentsList = new ArrayList<>();
         checkRep();
     }
 
@@ -72,8 +71,8 @@ public class Node<L, D> {
         }
         this.parents = new HashMap<>(toCopy.parents);
         this.children = new HashMap<>(toCopy.children);
-        this.parentsList = toCopy.getChildrenList();
-        this.childrenList = toCopy.getParentsList();
+        this.parentsList = new ArrayList<>(toCopy.getChildrenList());
+        this.childrenList = new ArrayList<>(toCopy.getParentsList());
         this.color = toCopy.getColor();
         checkRep();
     }
@@ -98,23 +97,10 @@ public class Node<L, D> {
         if(this.children.containsKey(child.label)) {
             throw new EdgeLabelAlreadyExists();
         }
-
         //Add to children map
-        //TODO can we assume toString of 'label'?
         this.children.put(label, child);
-        //Use a helper list to get all the names of children and then sort them
-        List<String> tempChildrenList = new ArrayList<>();
-        for(Node currNode : this.children.values()) {
-            tempChildrenList.add(currNode.getLabel().toString());
-        }
-        Collections.sort(tempChildrenList);
-        //Create the updated string representing all children
-        this.childrenList = "";
-        for(String childLabel: tempChildrenList) {
-            this.childrenList +=  childLabel;
-            this.childrenList +=  " ";
-        }
-        this.childrenList = this.childrenList.trim();
+        //Add to childrenList
+        this.childrenList.add((L)child.getLabel());
         checkRep();
     }
 
@@ -140,21 +126,23 @@ public class Node<L, D> {
         }
 
         //Add to parents map
-        //TODO can we assume toString of 'label'?
         this.parents.put(label, parent);
-        //Use a helper list to get all the names of parents and then sort them
-        List<String> tempParentsList = new ArrayList<>();
-        for(Node currNode: this.parents.values()) {
-            tempParentsList.add(currNode.getLabel().toString());
-        }
-        Collections.sort(tempParentsList);
-        //Create the updated string representing all children
-        this.parentsList = "";
-        for(String parentLabel: tempParentsList) {
-            this.parentsList +=  parentLabel;
-            this.parentsList +=  " ";
-        }
-        this.parentsList = this.parentsList.trim();
+        //Add to childrenList
+        this.parentsList.add((L)parent.getLabel());
+
+//        //Use a helper list to get all the names of parents and then sort them TODO remove
+//        List<String> tempParentsList = new ArrayList<>();
+//        for(Node currNode: this.parents.values()) {
+//            tempParentsList.add(currNode.getLabel().toString());
+//        }
+//        Collections.sort(tempParentsList);
+//        //Create the updated string representing all children
+//        this.parentsList = "";
+//        for(String parentLabel: tempParentsList) {
+//            this.parentsList +=  parentLabel;
+//            this.parentsList +=  " ";
+//        }
+//        this.parentsList = this.parentsList.trim();
         checkRep();
     }
 
@@ -192,22 +180,22 @@ public class Node<L, D> {
 
 
     /**
-     * @effects Returns a (string) list containing the children of this
+     * @effects Returns a list containing the children of this
      */
-    public String getChildrenList() {
+    public List<L> getChildrenList() {
         checkRep();
-        //We are not worried about returning this.childrenList since it is immutable (it is a java String).
-        return this.childrenList;
+        //We are not worried about returning this.childrenList since it is an unmodifiableList
+        return Collections.unmodifiableList(this.childrenList);
     }
 
 
     /**
-     * @effects Returns a (string )list containing the parents of this
+     * @effects Returns a list containing the parents of this
      */
-    public String getParentsList() {
+    public List<L> getParentsList() {
         checkRep();
-        //We are not worried about returning this.parentsList since it is immutable (it is a java String).
-        return this.parentsList;
+        //We are not worried about returning this.parentsList since it is an unmodifiableList
+        return Collections.unmodifiableList(this.parentsList);
     }
 
 

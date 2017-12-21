@@ -94,7 +94,7 @@ public class BipartiteGraphTestDriver {
      */
     public String listBlackNodes(String graphName) {
         BipartiteGraph currentGraph = this.graphs.get(graphName);
-        return currentGraph.listBlackNodes();
+        return convertListToAlphabeticSpacedString(currentGraph.listBlackNodes());
     }
 
     
@@ -105,7 +105,7 @@ public class BipartiteGraphTestDriver {
      */
     public String listWhiteNodes(String graphName) {
         BipartiteGraph currentGraph = this.graphs.get(graphName);
-        return currentGraph.listWhiteNodes();
+        return convertListToAlphabeticSpacedString(currentGraph.listWhiteNodes());
     }
 
     
@@ -116,7 +116,7 @@ public class BipartiteGraphTestDriver {
      */
     public String listChildren(String graphName, String parentName) throws NodeWithThisLabelDoesntExistException {
         BipartiteGraph currentGraph = this.graphs.get(graphName);
-        return currentGraph.listChildren(parentName);
+        return convertListToAlphabeticSpacedString(currentGraph.listChildren(parentName));
     }
 
     
@@ -127,7 +127,7 @@ public class BipartiteGraphTestDriver {
      */
     public String listParents(String graphName, String childName) throws NodeWithThisLabelDoesntExistException {
         BipartiteGraph currentGraph = this.graphs.get(graphName);
-        return currentGraph.listParents(childName);
+            return convertListToAlphabeticSpacedString(currentGraph.listParents(childName));
     }
 
     
@@ -156,6 +156,25 @@ public class BipartiteGraphTestDriver {
                                          EdgeWithLabelDoesntExistException {
         BipartiteGraph currentGraph = this.graphs.get(graphName);
         return (String)currentGraph.getParentByEdgeLabel(childName, edgeLabel);
+    }
+
+
+    /**
+     * @requires list is not null
+     * @return returns a space separated string constructed from all the elements of list, sorted in alphabetical order
+     */
+    private String convertListToAlphabeticSpacedString(List<String> list) {
+        //Using a new list because the one we get is unmodifiable
+        List<String> currentList = new ArrayList<>(list);
+        Collections.sort(currentList);
+        //Create the updated string
+        String toRet = "";
+        for(String label: currentList) {
+            toRet +=  label;
+            toRet +=  " ";
+        }
+        toRet = toRet.trim();
+        return toRet;
     }
 
 }
