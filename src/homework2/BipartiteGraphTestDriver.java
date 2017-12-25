@@ -10,7 +10,7 @@ import static homework2.IllegalArgumentException.*;
  */
 public class BipartiteGraphTestDriver {
 
-    private Map<String, BipartiteGraph<String, String>> graphs;
+    private Map<String, BipartiteGraph<String>> graphs;
 
     /**
      * @modifies this
@@ -28,7 +28,7 @@ public class BipartiteGraphTestDriver {
      * 			empty.
      */
     public void createGraph(String graphName) {
-        BipartiteGraph<String, String> newGraph = new BipartiteGraph();
+        BipartiteGraph<String> newGraph = new BipartiteGraph();
         this.graphs.put(graphName, newGraph);
     }
 

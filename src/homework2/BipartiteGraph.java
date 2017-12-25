@@ -1,5 +1,8 @@
 package homework2;
 
+import homework2.IllegalArgumentException;
+import homework2.Node;
+
 import java.util.*;
 
 import static homework2.IllegalArgumentException.*;
@@ -11,7 +14,7 @@ import static homework2.IllegalArgumentException.*;
  * that are of the same color).
  * Thus, a typical BipartiteGraph has the properties {whiteNodes, blackNodes}.
  */
-public class BipartiteGraph<L, D> {
+public class BipartiteGraph<L> {
 
     //Abs. Function:
     //  Represents a bipartite graph whose all white nodes are stored in this.whiteNodes and all black nodes are stored
@@ -21,8 +24,9 @@ public class BipartiteGraph<L, D> {
     //  this.whiteNodes and this.blackNodes cannot be null.
 
 
-    private final Map<L, Node<L, D>> whiteNodes;
-    private final Map<L, Node<L, D>> blackNodes;
+    private final Map<L, Node<L>> whiteNodes;
+    private final Map<L, Node<L>> blackNodes;
+    private final Set<L> edgesLabels;
 
 
     /**
@@ -32,6 +36,7 @@ public class BipartiteGraph<L, D> {
     public BipartiteGraph() {
         this.whiteNodes = new HashMap<>();
         this.blackNodes = new HashMap<>();
+        this.edgesLabels = new HashSet<>();
         checkRep();
     }
 
@@ -43,7 +48,7 @@ public class BipartiteGraph<L, D> {
      *          is already in the graph, throws NodeWithThisLabelAlreadyExistException otherwise
      *
      */
-    public void addBlackNode(L nodeLabel, D data) throws NodeWithThisLabelAlreadyExistException {
+    public void addBlackNode(L nodeLabel, Object data) throws NodeWithThisLabelAlreadyExistException {
         checkRep();
         if(isNodeWithNameExists(nodeLabel)) {
             throw new NodeWithThisLabelAlreadyExistException();
@@ -61,7 +66,7 @@ public class BipartiteGraph<L, D> {
      *          is already in the graph, throws NodeWithThisLabelAlreadyExistException otherwise
      *
      */
-    public void addWhiteNode(L nodeLabel, D data) throws NodeWithThisLabelAlreadyExistException {
+    public void addWhiteNode(L nodeLabel, Object data) throws NodeWithThisLabelAlreadyExistException {
         checkRep();
         if(isNodeWithNameExists(nodeLabel)) {
             throw new NodeWithThisLabelAlreadyExistException();
@@ -92,7 +97,7 @@ public class BipartiteGraph<L, D> {
      *          Else if parent and child is of the same color throws SameColorException
      *          Else creates an edge from parentName Node to childName Node labeled edgeLabel
      */
-    public void addEdge(L parentName, L childName, L edgeLabel) throws IllegalArgumentException{
+    public void addEdge(L parentName, L childName, L edgeLabel) throws IllegalArgumentException {
         checkRep();
 
         //Getting the nodes that we want to connect. These lines might throw an exception, we'll just pass it on
@@ -101,10 +106,19 @@ public class BipartiteGraph<L, D> {
         //Connecting the edge. These lines also might throw an exception that we'll pass on
         child.appendToParents(edgeLabel, parent);
         parent.appendToChildren(edgeLabel, child);
+        this.edgesLabels.add(edgeLabel);
         checkRep();
     }
 
     
+    /**
+     * @return a Set of the Edges of this
+     */
+    public Set<L> getEdgesLabels() {
+        checkRep();
+        return Collections.unmodifiableSet(this.edgesLabels);
+    }
+
     /**
      * @return a list of the names of all the black nodes in this
      */
@@ -115,7 +129,6 @@ public class BipartiteGraph<L, D> {
         //Collections.addAll(blackNodesList,(L)this.blackNodes.keySet());
         return Collections.unmodifiableList(blackNodesList);
     }
-
     
     /**
      * @return a list of the names of all the white nodes in this
@@ -190,7 +203,7 @@ public class BipartiteGraph<L, D> {
      * @effects If this doesn't contain a node named nodeLabel throws NodeWithThisLabelDoesntExistException
      *          Else returns the Node connected to nodeLabel label
      */
-    private Node getNodeByNodeLabel(L nodeLabel) throws NodeWithThisLabelDoesntExistException {
+    public Node getNodeByNodeLabel(L nodeLabel) throws NodeWithThisLabelDoesntExistException {
         if(!isNodeWithNameExists(nodeLabel)) {
             throw new NodeWithThisLabelDoesntExistException();
         }

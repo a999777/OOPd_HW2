@@ -14,7 +14,7 @@ import static homework2.Node.Color.WHITE;
  * Thus, a typical Node has the properties {label, data, color, children, parents, childrenList, parentsList}
  * A Node is immutable
  */
-public class Node<L, D> {
+public class Node<L> {
 
     //Abs. Function:
     //  Represents a bipartite graph node that is labeled this.label, contains this.data and is of color this.color.
@@ -32,7 +32,7 @@ public class Node<L, D> {
     public enum Color{BLACK, WHITE};
 
     private final L label;
-    private D data;
+    private Object data;
     private final Color color;
     private final Map<L,Node> children;
     private final Map<L,Node> parents;
@@ -44,9 +44,9 @@ public class Node<L, D> {
      * @requires label is not null, data is not null, color is BLACK or WHITE
      * @effects Initializes this with the given label, data and color.
      */
-    public Node(L label, D data, Color color) {
+    public Node(L label, Object data, Color color) {
         this.label = label;
-        //TODO should we create a new D?
+        //TODO should we create a new Object?
         this.data = data;
         this.color = color;
         this.children = new HashMap<>();
@@ -67,7 +67,7 @@ public class Node<L, D> {
         if(toCopy.data == null) {
             this.data = null;
         } else {
-            this.data = (D)toCopy.getData();
+            this.data = (Object)toCopy.getData();
         }
         this.parents = new HashMap<>(toCopy.parents);
         this.children = new HashMap<>(toCopy.children);
@@ -170,10 +170,10 @@ public class Node<L, D> {
     /**
      * @effects Returns the data of this
      */
-    public D getData() {
+    public Object getData() {
         checkRep();
         //Copying data and returning the copy since we don't know if data is immutable or not
-        //D retData = new D(this.data);
+        //Object retData = new Object(this.data);
         //TODO this causes a problem, so we switched to returning the field itself. we have to make sure it is immutable
         return this.data;
     }
