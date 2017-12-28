@@ -2,7 +2,7 @@ package homework2;
 
 import java.util.*;
 
-import static homework2.IllegalArgumentException.*;
+import static homework2.HW2Exception.*;
 
 /**
  * This class implements a testing driver for Simulator. The driver manages
@@ -20,8 +20,9 @@ public class SimulatorTestDriver {
         this.simulators = new HashMap<>();
     }
 
+
     /**
-     * @requires simName != null
+     * @requires simName is not null
      * @modifies this
      * @effects Creates a new simulator named simName. The simulator's graph is
      *          initially empty.
@@ -31,59 +32,63 @@ public class SimulatorTestDriver {
         this.simulators.put(simName, newSim);
     }
 
+
     /**
      * @requires createSimulator(simName)
-     *           && channelName != null && channelName has
+     *           and channelName is not null and channelName has
      *           not been used in a previous addChannel()  or
      *           addParticipant() call on this object
-     *           limit > 0
+     *           limit larger than 0
      * @modifies simulator named simName
      * @effects Creates a new Channel named by the String channelName, with a limit, and add it to
      *          the simulator named simName.
      */
     public void addChannel(String simName, String channelName, double limit)
-            throws IllegalArgumentException.NodeWithThisLabelAlreadyExistException {
+            throws NodeWithThisLabelAlreadyExistException {
         Simulator<String, Transaction> currSim = this.simulators.get(simName);
         Channel newChannel = new Channel(limit, channelName);
         currSim.addPipe(channelName, newChannel);
     }
 
+
     /**
-     * @requires createSimulator(simName) && participantName != null
-     *           && participantName has not been used in a previous addParticipant(), addChannel()
+     * @requires createSimulator(simName) and participantName is not null
+     *           and participantName has not been used in a previous addParticipant(), addChannel()
      *           call on this object
-     *           fee > 0
+     *           fee larger than 0
      * @modifies simulator named simName
      * @effects Creates a new Participant named by the String participantName and add
      *          it to the simulator named simName.
      */
     public void addParticipant(String simName, String participantName, double fee)
-            throws IllegalArgumentException.NodeWithThisLabelAlreadyExistException {
+            throws NodeWithThisLabelAlreadyExistException {
         Simulator<String, Transaction> currSim = this.simulators.get(simName);
         Participant newParticipant = new Participant(fee, participantName);
         currSim.addFilter(participantName, newParticipant);
     }
 
+
     /**
-     * @requires createSimulator(simName) && ((addPipe(parentName) &&
-     *           addFilter(childName)) || (addFilter(parentName) &&
-     *           addPipe(childName))) && edgeLabel != null && node named
+     * @requires createSimulator(simName) and ((addPipe(parentName) and
+     *           addFilter(childName)) or (addFilter(parentName) and
+     *           addPipe(childName))) and edgeLabel is not null and node named
      *           parentName has no other outgoing edge labeled edgeLabel
-     *           && node named childName has no other incoming edge labeled edgeLabel
+     *           and node named childName has no other incoming edge labeled edgeLabel
      * @modifies simulator named simName
      * @effects Adds an edge from the node named parentName to the node named
      *          childName in the simulator named simName. The new edge's label
      *          is the String edgeLabel.
      */
     public void addEdge(String simName, String parentName, String childName, String edgeLabel)
-            throws IllegalArgumentException{
+            throws HW2Exception {
         Simulator<String, Transaction> currSim = this.simulators.get(simName);
         currSim.addEdge(parentName, childName, edgeLabel);
     }
 
+
     /**
-     * @requires createSimulator(simName) && addChannel(channelName)
-     *           A transaction Transaction != null
+     * @requires createSimulator(simName) and addChannel(channelName)
+     *           A transaction Transaction is not null
      * @modifies channel named channelName
      * @effects pushes the Transaction into the channel named channelName in the
      *          simulator named simName.
@@ -96,23 +101,21 @@ public class SimulatorTestDriver {
         channel.addTransaction(tx);
     }
 
+
     /**
      * @requires list is not null
      * @return returns a space separated string constructed from all the elements of list, sorted in alphabetical order
      */
-    private String convertListToAlphabeticSpacedString(List<String> list) {
-        //Using a new list because the one we get is unmodifiable
-        List<String> currentList = new ArrayList<>(list);
-        Collections.sort(currentList);
-        //Create the updated string
+    private String convertListToAlphabeticSpacedString(List<Transaction> list) {
         String toRet = "";
-        for(String label: currentList) {
-            toRet +=  label;
+        for(Transaction t: list) {
+            toRet +=  t.getValue();
             toRet +=  " ";
         }
         toRet = toRet.trim();
         return toRet;
     }
+
 
     /**
      * @requires addChannel(channelName)
@@ -126,6 +129,7 @@ public class SimulatorTestDriver {
         return this.convertListToAlphabeticSpacedString(channel.listTransactions());
     }
 
+
     /**
      * @requires addParticipant(participantName)
      * @return The sum of all  Transaction values stored in the storage of the participant participantName in the simulator simName
@@ -138,6 +142,7 @@ public class SimulatorTestDriver {
         return participant.getParticipantBalance();
     }
 
+
     /**
      * @requires createSimulator(simName)
      * @modifies simulator named simName
@@ -147,6 +152,7 @@ public class SimulatorTestDriver {
         Simulator<String, Transaction> currSim = this.simulators.get(simName);
         currSim.simulate();
     }
+
 
     /**
      * Prints the all edges.
@@ -164,4 +170,5 @@ public class SimulatorTestDriver {
         }
         System.out.println(toPrint.trim());
     }
+
 }

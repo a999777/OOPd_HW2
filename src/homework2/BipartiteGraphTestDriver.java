@@ -1,7 +1,7 @@
 package homework2;
 
 import java.util.*;
-import static homework2.IllegalArgumentException.*;
+import static homework2.HW2Exception.*;
 
 
 /**
@@ -35,8 +35,8 @@ public class BipartiteGraphTestDriver {
     
     /**
      * @requires createGraph(graphName)
-     *           && nodeName != null
-     *           && neither addBlackNode(graphName,nodeName) 
+     *           and nodeName is not null
+     *           and neither addBlackNode(graphName,nodeName)
      *                  nor addWhiteNode(graphName,nodeName)
      *                      has already been called on this
      * @modifies graph named graphName
@@ -51,8 +51,8 @@ public class BipartiteGraphTestDriver {
     
     /**
      * @requires createGraph(graphName)
-     *           && nodeName != null
-     *           && neither addBlackNode(graphName,nodeName) 
+     *           and nodeName is not null
+     *           and neither addBlackNode(graphName,nodeName)
      *                  nor addWhiteNode(graphName,nodeName)
      *                      has already been called on this
      * @modifies graph named graphName
@@ -67,12 +67,12 @@ public class BipartiteGraphTestDriver {
     
     /**
      * @requires createGraph(graphName)
-     *           && ((addBlackNode(parentName) && addWhiteNode(childName))
-     *              || (addWhiteNode(parentName) && addBlackNode(childName)))
-     *           && edgeLabel != null
-     *           && node named parentName has no other outgoing edge labeled
+     *           and ((addBlackNode(parentName) and addWhiteNode(childName))
+     *              or (addWhiteNode(parentName) and addBlackNode(childName)))
+     *           and edgeLabel is not null
+     *           and node named parentName has no other outgoing edge labeled
      * 				edgeLabel
-     *           && node named childName has no other incoming edge labeled
+     *           and node named childName has no other incoming edge labeled
      * 				edgeLabel
      * @modifies graph named graphName
      * @effects Adds an edge from the node parentName to the node childName
@@ -81,7 +81,7 @@ public class BipartiteGraphTestDriver {
      */
     public void addEdge(String graphName,
     					String parentName, String childName, 
-                        String edgeLabel) throws IllegalArgumentException{
+                        String edgeLabel) throws HW2Exception {
         BipartiteGraph currentGraph = this.graphs.get(graphName);
         currentGraph.addEdge(parentName, childName, edgeLabel);
     }
@@ -110,7 +110,7 @@ public class BipartiteGraphTestDriver {
 
     
     /**
-     * @requires createGraph(graphName) && createNode(parentName)
+     * @requires createGraph(graphName) and createNode(parentName)
      * @return a space-separated list of the names of the children of
      * 		   parentName in the graph graphName, in alphabetical order.
      */
@@ -121,7 +121,7 @@ public class BipartiteGraphTestDriver {
 
     
     /**
-     * @requires createGraph(graphName) && createNode(childName)
+     * @requires createGraph(graphName) and createNode(childName)
      * @return a space-separated list of the names of the parents of
      * 		   childName in the graph graphName, in alphabetical order.
      */
@@ -175,6 +175,14 @@ public class BipartiteGraphTestDriver {
         }
         toRet = toRet.trim();
         return toRet;
+    }
+
+    /**
+     * @return a Set of the Edges of this
+     */
+    public Set<String> getEdgesLabels(String graphName) {
+        BipartiteGraph currentGraph = this.graphs.get(graphName);
+        return currentGraph.getEdgesLabels();
     }
 
 }

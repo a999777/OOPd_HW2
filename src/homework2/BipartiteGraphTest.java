@@ -2,16 +2,20 @@ package homework2;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
-import static homework2.IllegalArgumentException.*;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import static homework2.HW2Exception.*;
 
 
 /**
- * BipartiteGraphTest contains JUnit block-box unit tests for BipartiteGraph.
+ * BipartiteGraphTest contains JUnit black-box unit tests for BipartiteGraph.
  */
 public class BipartiteGraphTest {
 
 	@Test
-    public void testExample() throws IllegalArgumentException {
+    public void testExample() throws HW2Exception {
         BipartiteGraphTestDriver driver = new BipartiteGraphTestDriver();
 
         //create a graph
@@ -92,7 +96,7 @@ public class BipartiteGraphTest {
     }
 
     @Test
-    public void addEdgeRegularTest() throws IllegalArgumentException {
+    public void addEdgeRegularTest() throws HW2Exception {
         BipartiteGraphTestDriver driver = new BipartiteGraphTestDriver();
         driver.createGraph("g");
 
@@ -109,7 +113,7 @@ public class BipartiteGraphTest {
         driver.addEdge("g","w2","b2", "b");
         driver.addEdge("g","b3","w3", "c");
 
-        //Trying to connect vertices with a label used before in the graph but not with the vertices
+        //Trying to connect vertices with a label used before in the graph but not with the vertices (should work)
         driver.addEdge("g","b3","w2", "a");
         driver.addEdge("g","w1","b3", "b");
 
@@ -127,10 +131,17 @@ public class BipartiteGraphTest {
         assertEquals("w2 children incorrect","b2",driver.listChildren("g","w2"));
         assertEquals("w3 parents incorrect","b3",driver.listParents("g","w3"));
         assertEquals("w3 children incorrect","",driver.listChildren("g","w3"));
+
+        Set<String> expectedSet = new HashSet<>();
+        expectedSet.add("a");
+        expectedSet.add("b");
+        expectedSet.add("c");
+
+        assertEquals("Edges set incorrect",expectedSet,driver.getEdgesLabels("g"));
     }
 
     @Test(expected = SameColorException.class)
-    public void addEdgeBetweenSameColorTest() throws IllegalArgumentException {
+    public void addEdgeBetweenSameColorTest() throws HW2Exception {
         BipartiteGraphTestDriver driver = new BipartiteGraphTestDriver();
         driver.createGraph("g");
 
@@ -146,7 +157,7 @@ public class BipartiteGraphTest {
     }
 
     @Test(expected = NodeWithThisLabelDoesntExistException.class)
-    public void addEdgeWithNodeThatDoesntExistTest() throws IllegalArgumentException {
+    public void addEdgeWithNodeThatDoesntExistTest() throws HW2Exception {
         BipartiteGraphTestDriver driver = new BipartiteGraphTestDriver();
         driver.createGraph("g");
 
@@ -159,7 +170,7 @@ public class BipartiteGraphTest {
     }
 
     @Test(expected = EdgeLabelAlreadyExists.class)
-    public void addEdgeWithLabelThatAlreadyExistTest() throws IllegalArgumentException {
+    public void addEdgeWithLabelThatAlreadyExistTest() throws HW2Exception {
         BipartiteGraphTestDriver driver = new BipartiteGraphTestDriver();
         driver.createGraph("g");
 
@@ -173,7 +184,7 @@ public class BipartiteGraphTest {
     }
 
     @Test
-    public void getNodesByEdgeLabelTest() throws IllegalArgumentException {
+    public void getNodesByEdgeLabelTest() throws HW2Exception {
         BipartiteGraphTestDriver driver = new BipartiteGraphTestDriver();
         driver.createGraph("g");
 
@@ -202,7 +213,24 @@ public class BipartiteGraphTest {
 
     }
 
-    //  TODO: Add black-box tests
-    
-  
+    @Test
+    public void testGetEdgesLabels() throws HW2Exception {
+        BipartiteGraphTestDriver driver = new BipartiteGraphTestDriver();
+        driver.createGraph("g");
+
+        //Adding nodes
+        driver.addBlackNode("g", "b1");
+        driver.addBlackNode("g", "b2");
+        driver.addWhiteNode("g", "w1");
+        driver.addWhiteNode("g", "w2");
+
+        // Adding some edges
+        driver.addEdge("g", "b1", "w1", "b1w1");
+        driver.addEdge("g", "b2", "w1", "b2w1");
+        driver.addEdge("g", "b2", "w2", "b2w2");
+        Set<String> setEdges = driver.getEdgesLabels("g");
+        assertTrue(setEdges.contains("b1w1"));
+        assertTrue(setEdges.contains("b2w1"));
+        assertTrue(setEdges.contains("b2w2"));
+    }
 }

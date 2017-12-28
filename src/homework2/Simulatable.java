@@ -5,10 +5,9 @@ package homework2;
  * a pipe-and-filter simulation.
  */
 public interface Simulatable<T> {
-//TODO: check if it is ok to change the simulate method signature
 	/**
 	 * @modifies this, graph
 	 * @effects Simulates this pipe or filter in a system modeled by graph
 	 */
-	public void simulate(BipartiteGraph<T> graph) throws IllegalArgumentException.NodeWithThisLabelDoesntExistException;
+	public void simulate(BipartiteGraph<T> graph) throws HW2Exception.NodeWithThisLabelDoesntExistException;
 }

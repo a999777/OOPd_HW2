@@ -2,7 +2,7 @@ package homework2;
 
 import java.util.*;
 
-import static homework2.IllegalArgumentException.*;
+import static homework2.HW2Exception.*;
 import static homework2.Node.Color.BLACK;
 import static homework2.Node.Color.WHITE;
 
@@ -10,7 +10,7 @@ import static homework2.Node.Color.WHITE;
 /**
  * A Node is an abstraction of a Bipartite Graph Node Element.
  * As such, each Node has a color that can be either Black or White and it stores the information we want to represent
- * using the bipartite graph. It also contains information about its parents and its children.
+ * using the bipartite graph nodes. It also contains information about its parents and its children.
  * Thus, a typical Node has the properties {label, data, color, children, parents, childrenList, parentsList}
  * A Node is immutable
  */
@@ -18,7 +18,8 @@ public class Node<L> {
 
     //Abs. Function:
     //  Represents a bipartite graph node that is labeled this.label, contains this.data and is of color this.color.
-    //  It also saves all its children nodes in this.children and the all its parents nodes in this.parents.
+    //  It also saves all its children nodes and edges to them in this.children and the does the same for its parents
+    //  nodes and edges in this.parents.
     //  In addition, the labels of its children and parent nodes are accessible via this.childrenList and via
     //  this.parentsList.
 
@@ -27,7 +28,7 @@ public class Node<L> {
     //  this.color has to be either Black or White.
     //  this.children and this.parents cannot be null.
     //  this.childrenList and this.parentsList cannot be null.
-
+    //  this cannot have a parent or a child that has the same color
 
     public enum Color{BLACK, WHITE};
 
@@ -46,7 +47,6 @@ public class Node<L> {
      */
     public Node(L label, Object data, Color color) {
         this.label = label;
-        //TODO should we create a new Object?
         this.data = data;
         this.color = color;
         this.children = new HashMap<>();
@@ -88,8 +88,7 @@ public class Node<L> {
      */
     public void appendToChildren(L label, Node child) throws EdgeLabelAlreadyExists, SameColorException  {
         checkRep();
-
-        //Check if color is okay
+        //Check if color is okay (i.e. different)
         if(this.color == child.color) {
             throw new SameColorException();
         }
@@ -115,8 +114,7 @@ public class Node<L> {
      */
     public void appendToParents(L label, Node parent) throws EdgeLabelAlreadyExists, SameColorException {
         checkRep();
-
-        //Check if color is okay
+        //Check if color is okay (i.e. different)
         if(this.color == parent.color) {
             throw new SameColorException();
         }
@@ -124,25 +122,10 @@ public class Node<L> {
         if(this.parents.containsKey(label) || this.children.containsKey(label)) {
             throw new EdgeLabelAlreadyExists();
         }
-
         //Add to parents map
         this.parents.put(label, parent);
         //Add to childrenList
         this.parentsList.add((L)parent.getLabel());
-
-//        //Use a helper list to get all the names of parents and then sort them TODO remove
-//        List<String> tempParentsList = new ArrayList<>();
-//        for(Node currNode: this.parents.values()) {
-//            tempParentsList.add(currNode.getLabel().toString());
-//        }
-//        Collections.sort(tempParentsList);
-//        //Create the updated string representing all children
-//        this.parentsList = "";
-//        for(String parentLabel: tempParentsList) {
-//            this.parentsList +=  parentLabel;
-//            this.parentsList +=  " ";
-//        }
-//        this.parentsList = this.parentsList.trim();
         checkRep();
     }
 
@@ -172,9 +155,7 @@ public class Node<L> {
      */
     public Object getData() {
         checkRep();
-        //Copying data and returning the copy since we don't know if data is immutable or not
-        //Object retData = new Object(this.data);
-        //TODO this causes a problem, so we switched to returning the field itself. we have to make sure it is immutable
+        //Returning the data (immutable)
         return this.data;
     }
 
@@ -210,7 +191,7 @@ public class Node<L> {
         if(!this.children.containsKey(label)) {
             throw new EdgeWithLabelDoesntExistException();
         }
-        //Copying the Node just to be on the safe side fixme maybe not needed?
+        //Copying the Node just to be on the safe side
         Node retChild = new Node(this.children.get(label));
         checkRep();
         return retChild;
@@ -229,10 +210,29 @@ public class Node<L> {
         if(!this.parents.containsKey(label)) {
             throw new EdgeWithLabelDoesntExistException();
         }
-        //Copying the Node just to be on the safe side fixme maybe not needed?
+        //Copying the Node just to be on the safe side
         Node retParent = new Node(this.parents.get(label));
         checkRep();
         return retParent;
+    }
+
+     /**
+      * A helper method for checkRep()
+      * @requires this is not null
+      * @effects Returns true if this.color is different from all its parents and children, false otherwise
+      */
+    private boolean verifyColorCorrectness() {
+        for(Node parent: this.parents.values()) {
+            if(parent.color == this.color) {
+                return false;
+            }
+        }
+        for(Node child: this.children.values()) {
+            if(child.color == this.color) {
+                return false;
+            }
+        }
+        return true;
     }
 
 
@@ -248,7 +248,7 @@ public class Node<L> {
         assert(this.childrenList != null):"childrenList cannot be null!";
         assert(this.parentsList != null):"parentsList cannot be null!";
         assert(this.color == BLACK || this.color == WHITE ):"A Node color has to be black or white!";
+        assert(this.verifyColorCorrectness()):"A parent or a child has the same color!";
     }
-
 
 }

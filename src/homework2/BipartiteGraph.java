@@ -1,11 +1,8 @@
 package homework2;
 
-import homework2.IllegalArgumentException;
-import homework2.Node;
-
 import java.util.*;
 
-import static homework2.IllegalArgumentException.*;
+import static homework2.HW2Exception.*;
 
 
 /**
@@ -18,10 +15,11 @@ public class BipartiteGraph<L> {
 
     //Abs. Function:
     //  Represents a bipartite graph whose all white nodes are stored in this.whiteNodes and all black nodes are stored
-    //  in this.blackNodes.
+    //  in this.blackNodes. Other than that, the graph also stores a set of all the edges it has in this.edgesLabels.
 
     //Rep. Invariant:
     //  this.whiteNodes and this.blackNodes cannot be null.
+    //  this.edgesLabel cannot be null.
 
 
     private final Map<L, Node<L>> whiteNodes;
@@ -97,7 +95,7 @@ public class BipartiteGraph<L> {
      *          Else if parent and child is of the same color throws SameColorException
      *          Else creates an edge from parentName Node to childName Node labeled edgeLabel
      */
-    public void addEdge(L parentName, L childName, L edgeLabel) throws IllegalArgumentException {
+    public void addEdge(L parentName, L childName, L edgeLabel) throws HW2Exception {
         checkRep();
 
         //Getting the nodes that we want to connect. These lines might throw an exception, we'll just pass it on
@@ -112,32 +110,32 @@ public class BipartiteGraph<L> {
 
     
     /**
-     * @return a Set of the Edges of this
+     * @return a Set of the Edges of this (only unique labels)
      */
     public Set<L> getEdgesLabels() {
         checkRep();
         return Collections.unmodifiableSet(this.edgesLabels);
     }
 
+
     /**
      * @return a list of the names of all the black nodes in this
      */
     public List<L> listBlackNodes() {
         checkRep();
-        //Creating an array list with the labels of all the black nodes, and sorting it
+        //Creating an array list with the labels of all the black nodes
         List<L> blackNodesList = new ArrayList<>(this.blackNodes.keySet());
-        //Collections.addAll(blackNodesList,(L)this.blackNodes.keySet());
         return Collections.unmodifiableList(blackNodesList);
     }
-    
+
+
     /**
      * @return a list of the names of all the white nodes in this
      */
     public List<L> listWhiteNodes() {
         checkRep();
-        //Creating an array list with the labels of all the black nodes, and sorting it
+        //Creating an array list with the labels of all the white nodes
         List<L> whiteNodesList = new ArrayList<>(this.whiteNodes.keySet());
-        //Collections.addAll(whiteNodesList,(L)this.whiteNodes.keySet());
         return Collections.unmodifiableList(whiteNodesList);
     }
 
@@ -221,6 +219,7 @@ public class BipartiteGraph<L> {
     private void checkRep() {
         assert(this.whiteNodes != null):"A graph's white nodes cannot be null!";
         assert(this.blackNodes != null):"A graph's black nodes cannot be null!";
+        assert(this.edgesLabels != null):"A graph's edgges labels cannot be null!";
     }
 
 }

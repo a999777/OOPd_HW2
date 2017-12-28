@@ -12,7 +12,7 @@ public class Transaction {
    
     
 	/**
-	 * @requires value > 0, the destination must exist in the graph
+	 * @requires value is bigger than 0, the destination must exist in the graph
 	 * @modifies this
 	 * @effects Constructs a new transaction
 	 */
@@ -40,6 +40,5 @@ public class Transaction {
     public String toString() {
         return "Transaction: " + this.hashCode() + " Dest: " + dest + " Value: " + value;
     }
-    
-    
+
 }
